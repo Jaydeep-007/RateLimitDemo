@@ -9,13 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddDbContext<DbContextClass>
-(o => o.UseInMemoryDatabase("RudderStackDemo"));
+(o => o.UseInMemoryDatabase("RateLimittingDemo"));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Fixed Window Rate Litter Configuration
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter(policyName: "fixed", options =>
     {
@@ -27,6 +28,7 @@ builder.Services.AddRateLimiter(_ => _
 
 var app = builder.Build();
 
+//Seed The Database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -48,6 +50,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//Rate limitter middleware
 app.UseRateLimiter();
 
 app.Run();
